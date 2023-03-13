@@ -2,12 +2,15 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const { graphqlHTTP } = require("express-graphql");
 const { buildSchema } = require("graphql");
+const mongoose = require("mongoose");
 
+const Event = require("./models/event");
+
+const port = process.env.PORT || 5000;
 const app = express();
-
 app.use(bodyParser.json());
 
-const events = []
+const events = [];
 
 app.use(
   "/graphql",
@@ -43,22 +46,53 @@ app.use(
     `),
     rootValue: {
       events: () => {
-        return events;
+       return Event.find()
+          .then((result) => {
+            console.log("res", result);
+            return result?.map((res) => {
+              return { ...res?._doc };
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            throw err;
+          });
       },
       createEvent: (args) => {
-        const event = {
-            _id: Math.random().toString(),
-            title: args?.eventInput?.title,
-            description: args?.eventInput?.description,
-            price: args?.eventInput?.price,
-            date: args.eventInput.date,
-        };
-        events.push(event);
+        const event = new Event({
+          title: args?.eventInput?.title,
+          description: args?.eventInput?.description,
+          price: args?.eventInput?.price,
+          date: new Date(args.eventInput.date),
+        });
         return event
+          .save()
+          .then((res) => {
+            console.log("res", res);
+            return { ...res?._doc };
+          })
+          .catch((err) => {
+            console.log(err);
+            throw err;
+          });
       },
     },
     graphiql: true,
   })
 );
 
-app.listen(5000);
+mongoose
+  .connect(
+    "mongodb+srv://user101:8wjw1HpFJZvd8kd4@cluster0-56yha.mongodb.net/graphql?authSource=admin&replicaSet=Cluster0-shard-0&w=majority&readPreference=primary&retryWrites=true&ssl=true",
+    {
+      useUnifiedTopology: true,
+      useNewUrlParser: true,
+    }
+  )
+  .then((result) => {
+    app.listen(port);
+    console.log(`Connected to PORT ${port} `);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
