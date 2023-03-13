@@ -83,7 +83,7 @@ app.use(
 
 mongoose
   .connect(
-    "mongodb+srv://user101:8wjw1HpFJZvd8kd4@cluster0-56yha.mongodb.net/graphql?authSource=admin&replicaSet=Cluster0-shard-0&w=majority&readPreference=primary&retryWrites=true&ssl=true",
+    process.env.MONGO_URL,
     {
       useUnifiedTopology: true,
       useNewUrlParser: true,
