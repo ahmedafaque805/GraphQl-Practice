@@ -11,3 +11,33 @@
 //   }
 
 
+// query{
+// 	events {
+// 	title
+//     _id
+//   }
+// }
+
+// mutation{
+//     createUser(userInput: { email:"afaque@gmail.com",password:"12345678"}) 
+//     {
+//       email
+//       password
+//     }
+//   }
+
+
+// query{
+//     bookings{
+//       _id
+//       createdAt
+//       updatedAt
+//       user{
+//         email
+//       }
+//       event{
+//         title
+//         description
+//       }
+//     }
+//   }
